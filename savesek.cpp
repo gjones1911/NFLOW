@@ -84,7 +84,7 @@ int FLOW( vector<vector<int> >&G, vector<vector<int> >&R, vector<int> &path,int 
 }
 
 			//rpath = findflow(G,N,i,min);
-vector<int> findflow(vector< vector<int> > G, int &N, int n,int &min, set<int> Bn)
+vector<int> findflow(vector< vector<int> > G, int &N, int n,int &min)
 {
 	int i, j, k, nm, found = 1, nd, ans = 0;;
 
@@ -107,29 +107,18 @@ vector<int> findflow(vector< vector<int> > G, int &N, int n,int &min, set<int> B
 		printf("checking node %d\n",c);
 
 		//check if this node can hit the sink
-		if(G[N+1][c] > 0);
-
-
+		if(G[N=1][c] > 0);
+		
 		//node = G.at(c);
 
 		//go through nodes looking for max flow
-		//for(i = 1; i < G[c].size() ;i++)
-		for(i = 0; i < G[c].size() ;i++)
+		for(i = 1; i < G[c].size() ;i++)
 		{
 
+			if( G[c][i] > 0)printf("checking %d with dist %d\n",i, G[c][i]);
 			//if the node has flow check for max
 			if(G[c][i] >0)
 			{
-
-				//if have hit bob
-				if( i == 0)
-				{
-					printf("Have can hit the sink!!!!!!!!!!!!!!!!!!!\n");
-
-
-				}
-
-				printf("checking %d with dist %d\n",i, G[c][i]);
 				found = 1;
 				if(max  < G[c][i])
 				{
@@ -141,7 +130,7 @@ vector<int> findflow(vector< vector<int> > G, int &N, int n,int &min, set<int> B
 
 		}
 
-
+	
 		printf("Max is now %d\n\n\n\n\n");
 
 
@@ -228,15 +217,9 @@ int Singing::solve(int N, int low, int high, vector <int> pitch)
 	printf("the pitches in the song are.......\n");
 
 	G.resize(N+2);
-	AG.resize(N+2);
-	BG.resize(N+2);
 
 	G.at(0).resize(N+2,0);
 	G.at(N+1).resize(N+2,0);
-	AG.at(0).resize(N+2,0);
-	AG.at(N+1).resize(N+2,0);
-	BG.at(0).resize(N+2,0);
-	BG.at(N+1).resize(N+2,0);
 
 
 
@@ -253,9 +236,7 @@ int Singing::solve(int N, int low, int high, vector <int> pitch)
 		//it goes to alice
 		if( p >= high+1 )
 		{
-			printf("adding to alices set p:%d i:%d\n",p,i);
 			A.push_back(i);
-			An.insert(p);
 			graph.push_back(N+1);
 			//G.at(p).resize(0);
 			G.at(p).resize(N+2,0);
@@ -267,9 +248,7 @@ int Singing::solve(int N, int low, int high, vector <int> pitch)
 		// goes to Bob
 		else if( p < low)
 		{
-			printf("adding to bobs set p % d i % d\n",p,i);
 			B.push_back(i);
-			Bn.insert(p);
 			graph.push_back(0);
 			G.at(p).resize(N+2,0);
 			BG.at(p).resize(N+2,0);
@@ -280,7 +259,6 @@ int Singing::solve(int N, int low, int high, vector <int> pitch)
 		//in the left over
 		else
 		{
-			printf("adding to neutral set\n");
 			left.push_back(i);
 			graph.push_back(p);
 			G.at(p).resize(N+2,0);
@@ -319,18 +297,12 @@ int Singing::solve(int N, int low, int high, vector <int> pitch)
 	for(i = 0; i < graph.size();i++)
 	{
 		int nm = graph.at(i);
+
 		printf("%d ",nm); 
+
 	}
 
-	printf("\n\n");
 
-	for(i = 0; i < pitch.size();i++)
-	{
-		int nm = pitch.at(i);
-		printf("%d ",nm); 
-	}
-
-	printf("\n\n");
 	printf("graph size is %d\n",pitch.size());
 
 	//for(i = 0; i < graph.size()-1;i++)
@@ -352,7 +324,7 @@ int Singing::solve(int N, int low, int high, vector <int> pitch)
 
 			if(ad != 0 && ad != N+1) 
 			{	
-				//An.insert(ad);
+				An.insert(ad);
 				AG.at(nm2).at(ad2)++;
 				//AG.at(ad).at(nm)++;
 			}
@@ -361,23 +333,19 @@ int Singing::solve(int N, int low, int high, vector <int> pitch)
 		{
 			if(ad != 0 && ad != N+1)  
 			{
-				//Bn.insert(ad);
+				Bn.insert(ad);
 				BG.at(nm2).at(ad2)++;
 			}
 
 		}
 
 		G.at(nm).at(ad)++;
-//		G.at(nm2).at(ad)++;
 		G.at(ad).at(nm)++;
 
 	}
 
 
 	printf("\n\n\n");
-
-	//An.insert(N+1);
-	//Bn.insert(0);
 
 	printf("Alice is the only one that sings...\n");
 	for( sit = An.begin() ; sit != An.end();sit++)
@@ -400,8 +368,6 @@ int Singing::solve(int N, int low, int high, vector <int> pitch)
 
 	printf(">>>>\n");
 
-	set<int> aa, bb;
-
 	for( i = 0; i < G.size(); i++)
 	{
 		if(G.at(i).size() > 0)
@@ -412,8 +378,6 @@ int Singing::solve(int N, int low, int high, vector <int> pitch)
 			{
 				if(G.at(i).at(j) > 0)
 				{
-					if(i == 0) bb.insert(j);
-					else if(i == N+1) aa.insert(j);
 					R.at(i).at(j) *= -1;
 					printf("G:%d--(%d)-->%d\n",i, G.at(i).at(j), j);
 					printf("R:%d--(%d)-->%d\n",i, R.at(i).at(j), j);
@@ -422,258 +386,91 @@ int Singing::solve(int N, int low, int high, vector <int> pitch)
 		}
 	}
 
+exit(0);
 	orig = G;
+/*
 
-	printf("Alice nodes ...\n");
-	for( sit = aa.begin() ; sit != aa.end();sit++)
+	for( i = 0; i < G.at(0).size();i++)
 	{
-		printf("------A: %d\n",(*sit));
-	}
-		
-	printf("Bobs nodes ...\n");
-	for( sit = bb.begin() ; sit != bb.end();sit++)
-	{
-		printf("B: %d\n",(*sit));
-	}
+		if(G.at(0).at(i) != 0)
+		{
+			printf("following node %d\n",i);
 
-	printf("\n\n\n");
+			for(j = 1; j < G.at(i).size();j++)
+			{
 
+				int nmb = G.at(i).at(j);
+
+				if(G.at(i).at(j) != 0)
+				{
+					printf("Node %d can get to node %d by %d\n",i,j,G.at(i).at(j));
+				}
+
+				if( j == (N+1))
+				{
+					printf("Hit the sink from path....\n");
+				}
+			}
+
+		}
+	}
+*/
 
 	vector<int> rpath;
 
-	int to, from, min = 256, cut = 0, max = -256, nxt = 0, nd;
+	int to, from, min, cut = 0;
 	rpath.clear();
 
 	found = 1;
 
-	set<int> visited;
-
-	int cnt = 0;
-
-	printf("trying to find %d\n",N+1);
-	sit = bb.find(N+1);
-
-	if( sit != bb.end())
+	while(found)
 	{
-		cut += G[0][N+1];
+		found = 0;
 
-		printf("-------cutting sink from source adding %d to cut\n",G[0][N+1]);
-
-		G[0][N+1] = 0;
-		G[N+1][0] = 0;
-		orig[0][N+1] = 0;
-	}
-	else printf("Not Found\n");
-
-		//for(sit = bb.begin();sit != bb.end();sit++)
-		//for(sit = Bn.begin();sit != Bn.end();sit++)
-	for(int nde = 0; nde < G[0].size(); nde++)
-	{
-		//nxt = (*sit);
-
-
-	
-		
-		if( G[0][nde]  > 0 && nde != 0)
+		//go through a's nodes looking for flow
+		for(i = 0; i < G[0].size() ;i++)
 		{
-			printf("next is %d\n",nde);
-
-			found = 1;
-
-			nxt = nde;
-
-			while(found)
+			if(G[0][i] > 0)
 			{
-				found = 0;
+				printf("tryng to flow from node %d\n",i);
 
-				max = -256;
+				//give it graph, N, node number i 
+				rpath = findflow(G,N,i,min);
+				//exit(0);
 
-				visited.insert(nxt);
-
-				printf("---------------NODE is %d\n\n",nxt);
-
-				//find max flow
-				for(i = 0; i < G[nxt].size(); i++)
+				if(rpath.size() > 0)
 				{
-					//printf("Checking node %d's entry %d\n", nxt, i);
+					printf("found some flow\n\n");
+					found = 1;
 
-					if(visited.find(i) == visited.end() && i != nxt && G[nxt][i] > 0 && i != 0)
+					while( rpath.size() > 0)
 					{
-						printf("found flow\n");
-						found = 1;
+						to = rpath.back();
+						rpath.pop_back();
+						
+						from = rpath.back();
+						rpath.pop_back();
 
-						if( i == N+1)
+						printf("the dist from %d to %d is %d\n",from, to , G[from][to]);
+
+						G[from][to] -= min;
+						
+						printf("the dist from %d to %d is NOW %d\n",from, to , G[from][to]);
+
+						if(G[from][to] == 0)
 						{
-							max = G[nxt][i];
-							nd = i;
-							break;	
-						}
-						else if(G[nxt][i] > max)
-						{
-							max = G[nxt][i];
-							nd = i;
+							cut += orig[from][to];
 						}
 					}
 
 				}
-
-
-				if(found)
-				{
-					printf("Max flow %d found with node %d from %d\n",max,nd,nxt);
-
-					if( min > max)
-					{
-						min = max;
-					}
-
-					rpath.push_back(nxt);
-					rpath.push_back(nd);
-
-					if(nd == N+1)
-					{
-						printf("HIT the sink alice from node %d\n", nxt);
-
-						int set = 0;
-						while(rpath.size() > 0)
-						{
-							to = rpath.back();
-							rpath.pop_back();
-
-							from = rpath.back();
-							rpath.pop_back();
-
-							printf("from node %d to node %d dist: %d\n", from, to, G[from][to]);
-
-							G[from][to] -= min;
-
-							if(set == 0 && G[from][to] == 0)
-							{
-								printf("i---------found a cut of %d setting set\n",orig[from][to]);
-
-								cut += orig[from][to];
-								set = 1;
-							}
-
-							printf("Dist. is NOW %d\n",G[from][to]);
-						}
-
-						//start over
-						found = 0;
-						min = 256;
-						visited.clear();
-
-					}
-					else
-					{
-						nxt = nd;
-					}
-
-					printf("\n\n\n");
-
-				}
-				else printf("found no flow!!!!!!\n\n\n");
-
-				cnt++;
-				//		if(cnt > 3) exit(0);
-
+				else printf("no path found\n");
 			}
 		}
 	}
 
-	/*
-	//go through a's nodes looking for flow
-	for(i = 0; i < G[0].size() ;i++)
-	//for(sit = Bn.begin(); sit != Bn.end();sit++)
-	{
+	printf("MIN CUT %d\n",cut);
 
-	//	int nnm = (*sit);
-
-	int nnm = G[0][i]	
-
-	if(nnm > 0)
-	{
-	printf("tryng to flow from node %d\n",nnm);
-
-	found = 1;
-
-	//exit(0);
-	while(found)
-	{  
-	found = 0;
-
-	printf("Checking node %d\n",nnm);
-
-	//check this node for flow
-	for(i = 0; i < G[nnm].size();i++)
-	{
-	//if you find flow check for the max
-
-	if(G[nnm][i] > 0 && i != 0)
-	{
-	found = 1;
-	printf("flow to node %d at weight %d\n",i,G[nnm][i]);
-
-	if( G[nnm][i] > max) 
-	{
-	max = G[nnm][i];
-	nxt = i;
-	printf("MAX is now %d\n",G[nnm][i]);
-	}
-	}
-	}
-
-
-	if(found == 1)
-	{
-	printf("the max flow out of node %d is %d to node %d\n",nnm, max,nxt);
-
-	if(max < min)
-	{
-	min = max;
-	}
-
-	rpath.push_back(nnm);
-	rpath.push_back(nxt);
-
-	//if i am part of allices set
-	//return;
-	if(An.find(nxt) != An.end())
-	{
-	found = 0;
-
-	while(rpath.size() > 0)
-	{
-	to = rpath.back();
-	rpath.pop_back();
-
-	from = rpath.back();
-	rpath.pop_back();
-
-	//sub min from path
-	printf("G from %d to %d is %d\n", from , to, G[from][to]);
-	G[from][to] -= min;
-	printf("NOW G from %d to %d is %d\n", from , to, G[from][to]);
-
-	if(G[from][to] == 0)
-	{
-		cut += orig[from][to];
-	}
-}
-}
-else 
-{
-	nnm = nxt;
-}
-}
-else printf("no flow found\n");
-
-}
-}
-}
-*/
-printf("MIN CUT %d\n",cut);
-
-printf("\n");
-exit(0);
+	printf("\n");
+	exit(0);
 }
