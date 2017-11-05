@@ -403,99 +403,43 @@ int Singing::solve(int N, int low, int high, vector <int> pitch)
 		}
 	}
 
-	/*
-	//go through a's nodes looking for flow
-	for(i = 0; i < G[0].size() ;i++)
-	//for(sit = Bn.begin(); sit != Bn.end();sit++)
-	{
 
-	//	int nnm = (*sit);
-
-	int nnm = G[0][i]	
-
-	if(nnm > 0)
-	{
-	printf("tryng to flow from node %d\n",nnm);
-
-	found = 1;
-
-	//exit(0);
-	while(found)
-	{  
-	found = 0;
-
-	printf("Checking node %d\n",nnm);
-
-	//check this node for flow
-	for(i = 0; i < G[nnm].size();i++)
-	{
-	//if you find flow check for the max
-
-	if(G[nnm][i] > 0 && i != 0)
-	{
-	found = 1;
-	printf("flow to node %d at weight %d\n",i,G[nnm][i]);
-
-	if( G[nnm][i] > max) 
-	{
-	max = G[nnm][i];
-	nxt = i;
-	printf("MAX is now %d\n",G[nnm][i]);
-	}
-	}
-	}
-
-
-	if(found == 1)
-	{
-	printf("the max flow out of node %d is %d to node %d\n",nnm, max,nxt);
-
-	if(max < min)
-	{
-	min = max;
-	}
-
-	rpath.push_back(nnm);
-	rpath.push_back(nxt);
-
-	//if i am part of allices set
-	//return;
-	if(An.find(nxt) != An.end())
-	{
-	found = 0;
-
-	while(rpath.size() > 0)
-	{
-	to = rpath.back();
-	rpath.pop_back();
-
-	from = rpath.back();
-	rpath.pop_back();
-
-	//sub min from path
-	printf("G from %d to %d is %d\n", from , to, G[from][to]);
-	G[from][to] -= min;
-	printf("NOW G from %d to %d is %d\n", from , to, G[from][to]);
-
-	if(G[from][to] == 0)
-	{
-		cut += orig[from][to];
-	}
+return cut;
 }
-}
-else 
+
+
+
+int main(int argc, char ** argv)
 {
-	nnm = nxt;
-}
-}
-else printf("no flow found\n");
 
-}
-}
-}
+	Singing S;
+
+	int N, low, high, num, mincut = 0;;
+
+	vector<int> pitch;
+
+	pitch.clear();
+
+	cin>>N>>low>>high;
+
+//	printf("N:%d, Low: %d High: %d\n",N, low, high);
+
+	while(cin>>num)
+	{
+		pitch.push_back(num);
+	}
+/*		
+	for(int i=0; i < pitch.size();i++)
+	{
+		printf("%d ",pitch.at(i));
+	}
+
+	printf("\n");
 */
-//printf("MIN CUT %d\n",cut);
+	mincut = S.solve(N,low,high, pitch);
 
-//printf("\n");
-return cut;;
+	cout<<mincut<<endl;
+	
+
+	return mincut;
 }

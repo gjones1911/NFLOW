@@ -10,6 +10,85 @@
 #include <cstdlib>
 using namespace std;
 
+
+
+vector <int>  findFlow( vector<vector<int> > &G, int &N, int &node, set<int> &V, vector<int> &path,  int &min)
+{
+	printf("checking node%d\n",node);
+
+	set<int> MV;
+
+	if(node == N+1)
+	{
+		printf("Hit the sink..........\n");
+
+		path.push_back(node);
+		return path;
+	}
+
+	int next = 0;
+
+	int f = 0, oldm = min;
+
+	path.push_back(node);
+	V.insert(node);
+	MV = V;
+
+	for(int i = 0; i < G[node].size();i++)
+	{
+		int dis = G[node][i];
+
+		if( dis > 0 && V.find(i) == V.end())
+		{
+			if(min > dis)
+			{
+				min = dis;
+
+				printf("MIN is now %d\n",min);
+			}
+
+			f = 1;
+			vector<int> curnt;
+			curnt = findFlow(G,N,i,V, path, min);
+			
+			printf("back in node %d\n",node);
+			printf("current back is %d\n", curnt.back());
+			
+			if(path.back() == N+1)
+			{
+				return path;;
+			}
+			min = oldm;
+			V = MV;
+		}
+	}
+
+	//if found some flow go there
+	if(f == 0)
+	{
+		printf("found no flow from node %d\n",node);
+		vector<int>empty;
+		empty.clear();
+
+		printf("removing %d from path\n", path.back());
+		path.pop_back();
+
+		return path;;
+	}
+	else
+	{
+		printf("removing %d from path\n", path.back());
+		path.pop_back();
+		return path;		
+	}
+	
+
+}
+
+
+
+
+
 class Singing 
 {
 	public:
@@ -138,22 +217,22 @@ int Singing::solve(int N, int low, int high, vector <int> pitch)
 
 //	printf("Graph...\n");
 
-//	for(i = 0; i < graph.size();i++)
-//	{
-//		int nm = graph.at(i);
-//		printf("%d ",nm); 
-//	}
+	for(i = 0; i < graph.size();i++)
+	{
+		int nm = graph.at(i);
+		printf("%d ",nm); 
+	}
 
-//	printf("\n\n");
+	printf("\n\n");
 
-//	for(i = 0; i < pitch.size();i++)
-//	{
-//		int nm = pitch.at(i);
-//		printf("%d ",nm); 
-//	}
+	for(i = 0; i < pitch.size();i++)
+	{
+		int nm = pitch.at(i);
+		printf("%d ",nm); 
+	}
 
-//	printf("\n\n");
-//	printf("graph size is %d\n",pitch.size());
+	printf("\n\n");
+	printf("graph size is %d\n",pitch.size());
 
 	//for(i = 0; i < graph.size()-1;i++)
 	for(i = 0; i < pitch.size()-1;i++)
@@ -164,10 +243,10 @@ int Singing::solve(int N, int low, int high, vector <int> pitch)
 		int nm2 = pitch.at(i);
 		int ad2 = pitch.at(i+1);
 
-//		printf("i:%d current %d ,next %d\n",i,nm,ad);  
-//		printf(" ");
-//		printf("i:%d Pcurrent %d ,Pnext %d\n",i,nm2,ad2);  
-//		printf(" ");
+		printf("i:%d current %d ,next %d\n",i,nm,ad);  
+		printf(" ");
+		printf("i:%d Pcurrent %d ,Pnext %d\n",i,nm2,ad2);  
+		printf(" ");
 
 		if(nm == N+1) 
 		{
@@ -189,14 +268,17 @@ int Singing::solve(int N, int low, int high, vector <int> pitch)
 
 		}
 
-		G.at(nm).at(ad)++;
-//		G.at(nm2).at(ad)++;
-		G.at(ad).at(nm)++;
+		if( nm != ad)
+		{
+			G.at(nm).at(ad)++;
+			//		G.at(nm2).at(ad)++;
+			G.at(ad).at(nm)++;
+		}
 
 	}
 
 
-//	printf("\n\n\n");
+	printf("\n\n\n");
 
 	//An.insert(N+1);
 	//Bn.insert(0);
@@ -228,7 +310,7 @@ int Singing::solve(int N, int low, int high, vector <int> pitch)
 	{
 		if(G.at(i).size() > 0)
 		{
-//			printf("NODE %d:\n",i);
+			printf("NODE %d:\n",i);
 
 			for(j = 0; j < G.at(i).size();j++)
 			{
@@ -237,8 +319,8 @@ int Singing::solve(int N, int low, int high, vector <int> pitch)
 					if(i == 0) bb.insert(j);
 					else if(i == N+1) aa.insert(j);
 					R.at(i).at(j) *= -1;
-//					printf("G:%d--(%d)-->%d\n",i, G.at(i).at(j), j);
-//					printf("R:%d--(%d)-->%d\n",i, R.at(i).at(j), j);
+					printf("G:%d--(%d)-->%d\n",i, G.at(i).at(j), j);
+					printf("R:%d--(%d)-->%d\n",i, R.at(i).at(j), j);
 				}
 			}
 		}
@@ -268,7 +350,7 @@ int Singing::solve(int N, int low, int high, vector <int> pitch)
 
 	found = 1;
 
-	set<int> visited;
+	set<int> visited, V;
 
 	int cnt = 0;
 
@@ -279,28 +361,108 @@ int Singing::solve(int N, int low, int high, vector <int> pitch)
 	{
 		cut += G[0][N+1];
 
-//		printf("-------cutting sink from source adding %d to cut\n",G[0][N+1]);
+		printf("-------cutting sink from source adding %d to cut\n",G[0][N+1]);
 
 		G[0][N+1] = 0;
 		G[N+1][0] = 0;
 		orig[0][N+1] = 0;
 	}
-//	else printf("Not Found\n");
+	else printf("Not Found\n");
 
-		//for(sit = bb.begin();sit != bb.end();sit++)
-		//for(sit = Bn.begin();sit != Bn.end();sit++)
+	int oldy = 0;
+
+
+	for(int nde = 0; nde < G[0].size(); nde++)
+	{
+		
+		if( G[0][nde] > 0)
+		{
+			printf("found flow to node %d \n\n\n", nde);
+			V.insert(0);
+			path.push_back(0);
+			min = 256;
+			while(path.size() > 0)
+			{
+
+			
+			min = 256;
+
+			if(min > G[0][nde])
+			{
+				min = G[0][nde];
+				printf("min is now %d\n",min);
+			}
+			
+				path = findFlow(G, N, nde, V, path, min);
+				V.clear();
+
+				if( path.size() == 1)
+				{
+					path.clear();
+				}
+				if(path.back() == N+1)
+				{
+					int from, to;
+
+					int set = 0;
+					to = path.back();
+					path.pop_back();
+					
+					while(path.size() > 0)
+					{
+						
+						from = path.back();
+						path.pop_back();
+
+						printf("from node %d to node %d dist: %d\n", from, to, G[from][to]);
+
+						G[from][to] -= min;
+						
+						printf("NOW dist: %d\n", G[from][to]);
+
+						if(set == 0 && G[from][to] == 0)
+						{
+							printf("i---------found a cut of %d setting set\n",orig[from][to]);
+
+							cut += orig[from][to];
+							set = 1;
+						}
+
+						to = from;
+						
+					}
+					path.push_back(0);
+					V.insert(0);
+				}
+				else
+				{
+					printf("node %d found no flow going to next one\n\n",nde);
+					path.clear();
+				}
+			}
+		}
+	}
+
+	return cut;
+
+	//for(sit = bb.begin();sit != bb.end();sit++)
+	//for(sit = Bn.begin();sit != Bn.end();sit++)
 	for(int nde = 0; nde < G[0].size(); nde++)
 	{
 		//nxt = (*sit);
 
 
-	
-		
+
 		if( G[0][nde]  > 0 && nde != 0)
 		{
-//			printf("next is %d\n",nde);
+			//save node from bob
+			oldy = nde;
+			//			
+			//			printf("next is %d\n",nde);
 
 			found = 1;
+
+			int Bnde = 0, first = 0;;
 
 			nxt = nde;
 
@@ -312,7 +474,9 @@ int Singing::solve(int N, int low, int high, vector <int> pitch)
 
 				visited.insert(nxt);
 
-//				printf("---------------NODE is %d\n\n",nxt);
+				printf("---------------NODE is %d\n\n",nxt);
+
+
 
 				//find max flow
 				for(i = 0; i < G[nxt].size(); i++)
@@ -321,8 +485,46 @@ int Singing::solve(int N, int low, int high, vector <int> pitch)
 
 					if(visited.find(i) == visited.end() && i != nxt && G[nxt][i] > 0 && i != 0)
 					{
-//						printf("found flow\n");
+
+						first++;
+						if( first == 1) Bnde = 1;
+
+						if( i == N+1)
+						{
+							max = G[nxt][i];
+							nd = i;
+							break;	
+						}
+						else if(G[nxt][i] > max)
+						{
+							max = G[nxt][i];
+							nd = i;
+						}
+					}
+
+				}
+
+
+
+
+
+
+
+
+
+
+				//find max flow
+				for(i = 0; i < G[nxt].size(); i++)
+				{
+					//printf("Checking node %d's entry %d\n", nxt, i);
+
+					if(visited.find(i) == visited.end() && i != nxt && G[nxt][i] > 0 && i != 0)
+					{
+						printf("found flow to node %d\n",i);
 						found = 1;
+
+						first++;
+						if( first == 1) Bnde = 1;
 
 						if( i == N+1)
 						{
@@ -342,7 +544,7 @@ int Singing::solve(int N, int low, int high, vector <int> pitch)
 
 				if(found)
 				{
-//					printf("Max flow %d found with node %d from %d\n",max,nd,nxt);
+					printf("Max flow %d found with node %d from %d\n",max,nd,nxt);
 
 					if( min > max)
 					{
@@ -354,7 +556,7 @@ int Singing::solve(int N, int low, int high, vector <int> pitch)
 
 					if(nd == N+1)
 					{
-//						printf("HIT the sink alice from node %d\n", nxt);
+						printf("HIT the sink alice from node %d\n", nxt);
 
 						int set = 0;
 						while(rpath.size() > 0)
@@ -365,23 +567,25 @@ int Singing::solve(int N, int low, int high, vector <int> pitch)
 							from = rpath.back();
 							rpath.pop_back();
 
-//							printf("from node %d to node %d dist: %d\n", from, to, G[from][to]);
+							printf("from node %d to node %d dist: %d\n", from, to, G[from][to]);
 
 							G[from][to] -= min;
 
 							if(set == 0 && G[from][to] == 0)
 							{
-//								printf("i---------found a cut of %d setting set\n",orig[from][to]);
+								printf("i---------found a cut of %d setting set\n",orig[from][to]);
 
 								cut += orig[from][to];
 								set = 1;
 							}
 
-//							printf("Dist. is NOW %d\n",G[from][to]);
+							printf("Dist. is NOW %d\n",G[from][to]);
 						}
 
 						//start over
-						found = 0;
+						//found = 0;
+						printf("Starting over at node %d\n",oldy);
+						nxt = oldy;
 						min = 256;
 						visited.clear();
 
@@ -391,111 +595,72 @@ int Singing::solve(int N, int low, int high, vector <int> pitch)
 						nxt = nd;
 					}
 
-//					printf("\n\n\n");
+					printf("\n\n\n");
 
 				}
-//				else printf("found no flow!!!!!!\n\n\n");
+				else 
+				{
+					printf("found no flow first is %d!!!!!!\n\n\n", first);
+					
+					if( first == 0)
+					{
+						printf("Bob's node %d found no flow so go to next bob node\n", oldy);
+					}
+					else
+					{
+						printf("Bob's node %d found some flow at some point so try again\n",oldy);
+						found = 1;
+						first = 0;
+						nxt = oldy;
+					}
+					visited.clear();
+
+				}
 
 				cnt++;
-				//		if(cnt > 3) exit(0);
+				//		if(cnt >  exit(0);
 
 			}
 		}
 	}
 
-	/*
-	//go through a's nodes looking for flow
-	for(i = 0; i < G[0].size() ;i++)
-	//for(sit = Bn.begin(); sit != Bn.end();sit++)
-	{
 
-	//	int nnm = (*sit);
-
-	int nnm = G[0][i]	
-
-	if(nnm > 0)
-	{
-	printf("tryng to flow from node %d\n",nnm);
-
-	found = 1;
-
-	//exit(0);
-	while(found)
-	{  
-	found = 0;
-
-	printf("Checking node %d\n",nnm);
-
-	//check this node for flow
-	for(i = 0; i < G[nnm].size();i++)
-	{
-	//if you find flow check for the max
-
-	if(G[nnm][i] > 0 && i != 0)
-	{
-	found = 1;
-	printf("flow to node %d at weight %d\n",i,G[nnm][i]);
-
-	if( G[nnm][i] > max) 
-	{
-	max = G[nnm][i];
-	nxt = i;
-	printf("MAX is now %d\n",G[nnm][i]);
-	}
-	}
-	}
-
-
-	if(found == 1)
-	{
-	printf("the max flow out of node %d is %d to node %d\n",nnm, max,nxt);
-
-	if(max < min)
-	{
-	min = max;
-	}
-
-	rpath.push_back(nnm);
-	rpath.push_back(nxt);
-
-	//if i am part of allices set
-	//return;
-	if(An.find(nxt) != An.end())
-	{
-	found = 0;
-
-	while(rpath.size() > 0)
-	{
-	to = rpath.back();
-	rpath.pop_back();
-
-	from = rpath.back();
-	rpath.pop_back();
-
-	//sub min from path
-	printf("G from %d to %d is %d\n", from , to, G[from][to]);
-	G[from][to] -= min;
-	printf("NOW G from %d to %d is %d\n", from , to, G[from][to]);
-
-	if(G[from][to] == 0)
-	{
-		cut += orig[from][to];
-	}
+return cut;
 }
-}
-else 
+
+
+
+int main(int argc, char ** argv)
 {
-	nnm = nxt;
-}
-}
-else printf("no flow found\n");
 
-}
-}
-}
+	Singing S;
+
+	int N, low, high, num, mincut = 0;;
+
+	vector<int> pitch;
+
+	pitch.clear();
+
+	cin>>N>>low>>high;
+
+//	printf("N:%d, Low: %d High: %d\n",N, low, high);
+
+	while(cin>>num)
+	{
+		pitch.push_back(num);
+	}
+/*		
+	for(int i=0; i < pitch.size();i++)
+	{
+		printf("%d ",pitch.at(i));
+	}
+
+	printf("\n");
 */
-//printf("MIN CUT %d\n",cut);
+	mincut = S.solve(N,low,high, pitch);
 
-//printf("\n");
-return cut;;
+	cout<<mincut<<endl;
+	
+
+	return mincut;
 }
